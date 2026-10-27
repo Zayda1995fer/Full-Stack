@@ -156,3 +156,22 @@ También se agregó `GET /tasks/:taskId`, el campo `replacedById` se llena al ro
   la URL use `10.0.2.2` en el emulador.
 - **`npm audit` muestra vulnerabilidades en `prisma`:** vienen de la herramienta de línea de
   comandos de Prisma 6 (dependencia de desarrollo) y no se incluyen en el servidor.
+
+
+  ## 6. Evidencias 
+  <img width="1917" height="957" alt="1" src="https://github.com/user-attachments/assets/f54e06cf-51af-428a-a305-aafa05f3d1ab" />
+<img width="1552" height="646" alt="2" src="https://github.com/user-attachments/assets/a2effd76-b39c-4d94-965c-f0382973d0f3" />
+<img width="1531" height="545" alt="4" src="https://github.com/user-attachments/assets/41b7a84b-b811-4dc9-aaed-07573a7aa673" />
+
+<img width="1656" height="955" alt="3" src="https://github.com/user-attachments/assets/b052f48f-dc66-46de-a27f-1472d0669d90" />
+
+<img width="1805" height="990" alt="5" src="https://github.com/user-attachments/assets/6a248b1d-1a23-438f-8102-53baf8586c12" />
+<img width="1457" height="846" alt="6" src="https://github.com/user-attachments/assets/a9de42e8-3021-427f-9f3d-5543d51acea4" />
+
+  <img width="1307" height="577" alt="7" src="https://github.com/user-attachments/assets/d4cb1bc1-b602-4f24-a4ed-b70ffbdc8128" />
+<img width="1281" height="91" alt="8" src="https://github.com/user-attachments/assets/78a1171f-7b07-4891-8ccf-f21a6d99ced5" />
+<img width="1916" height="1020" alt="9" src="https://github.com/user-attachments/assets/051be8d5-c912-4fd7-9731-ead08a13c171" />
+
+<img width="1895" height="1007" alt="10" src="https://github.com/user-attachments/assets/eb438f05-e5f8-4b50-a505-2905a97cda2a" />
+
+<img width="1917" height="962" alt="11" src="https://github.com/user-attachments/assets/4c71b666-6360-4c2e-a45b-d23e19fa0186" />
