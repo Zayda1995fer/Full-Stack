@@ -1,0 +1,190 @@
+openapi: 3.0.3
+info:
+  title: Task Manager API
+  version: 1.0.0
+  description: API REST versionada del tutorial "Secure Task Manager". Todas las rutas de /tasks requieren un access token Bearer.
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Desarrollo local
+paths:
+  /auth/register:
+    post:
+      summary: Registrar cuenta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credentials' }
+      responses:
+        "201": { description: Cuenta creada, content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } } }
+        "400": { $ref: '#/components/responses/ValidationError' }
+        "409": { $ref: '#/components/responses/Error' }
+        "429": { $ref: '#/components/responses/Error' }
+  /auth/login:
+    post:
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credentials' }
+      responses:
+        "200": { description: Sesión iniciada, content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } } }
+        "401": { description: "Correo o contraseña incorrectos (mensaje genérico)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        "429": { $ref: '#/components/responses/Error' }
+  /auth/refresh:
+    post:
+      summary: Rotar refresh token
+      description: Revoca el token enviado y devuelve un par nuevo de la misma familia. Si se presenta un token ya rotado, se revoca toda la familia.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RefreshRequest' }
+      responses:
+        "200": { description: Par nuevo, content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } } }
+        "401": { $ref: '#/components/responses/Error' }
+  /auth/logout:
+    post:
+      summary: Cerrar sesión (revoca la familia del token)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RefreshRequest' }
+      responses:
+        "204": { description: Sesión cerrada }
+  /auth/logout-all:
+    post:
+      summary: Cerrar todas las sesiones del usuario
+      security: [ { bearerAuth: [] } ]
+      responses:
+        "204": { description: Todas las sesiones revocadas }
+        "401": { $ref: '#/components/responses/Error' }
+  /tasks:
+    get:
+      summary: Listar tareas propias (paginado)
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - { in: query, name: page, schema: { type: integer, minimum: 1, default: 1 } }
+        - { in: query, name: limit, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+      responses:
+        "200":
+          description: Tareas del usuario actual
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Task' } }
+                  page: { type: integer }
+                  limit: { type: integer }
+        "400": { $ref: '#/components/responses/ValidationError' }
+        "401": { $ref: '#/components/responses/Error' }
+    post:
+      summary: Crear tarea
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string, minLength: 1, maxLength: 120 }
+                description: { type: string, maxLength: 2000, nullable: true }
+      responses:
+        "201": { $ref: '#/components/responses/TaskItem' }
+        "400": { $ref: '#/components/responses/ValidationError' }
+        "401": { $ref: '#/components/responses/Error' }
+  /tasks/{taskId}:
+    parameters:
+      - { in: path, name: taskId, required: true, schema: { type: string, pattern: '^[a-z0-9]{20,40}$' } }
+    get:
+      summary: Obtener una tarea propia
+      security: [ { bearerAuth: [] } ]
+      responses:
+        "200": { $ref: '#/components/responses/TaskItem' }
+        "404": { description: No existe o pertenece a otro usuario }
+    patch:
+      summary: Actualizar una tarea propia
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                title: { type: string, minLength: 1, maxLength: 120 }
+                description: { type: string, maxLength: 2000, nullable: true }
+                completed: { type: boolean }
+      responses:
+        "200": { $ref: '#/components/responses/TaskItem' }
+        "400": { $ref: '#/components/responses/ValidationError' }
+        "404": { description: No existe o pertenece a otro usuario }
+    delete:
+      summary: Eliminar una tarea propia
+      security: [ { bearerAuth: [] } ]
+      responses:
+        "204": { description: Eliminada }
+        "404": { description: No existe o pertenece a otro usuario }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    Credentials:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 12, maxLength: 128 }
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken: { type: string, minLength: 20, maxLength: 200 }
+    TokenPair:
+      type: object
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        expiresIn: { type: integer, example: 600 }
+    Task:
+      type: object
+      properties:
+        id: { type: string }
+        ownerId: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        completed: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details:
+              type: array
+              items: { type: object, properties: { field: { type: string }, message: { type: string } } }
+  responses:
+    Error:
+      description: Error seguro (sin detalles internos)
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    ValidationError:
+      description: Datos inválidos (VALIDATION_ERROR)
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    TaskItem:
+      description: Una tarea
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              item: { $ref: '#/components/schemas/Task' }

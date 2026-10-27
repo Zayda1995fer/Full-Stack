@@ -1,0 +1,37 @@
+{
+  "name": "secure-task-manager-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Secure Task Manager REST API (Express + PostgreSQL + Prisma)",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "jest --runInBand",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "secret": "node -e \"console.log(require('crypto').randomBytes(48).toString('hex'))\""
+  },
+  "jest": {
+    "setupFiles": ["dotenv/config"],
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pino": "^9.9.0",
+    "pino-http": "^10.5.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.1.0",
+    "prisma": "^6.19.0",
+    "supertest": "^7.1.0"
+  }
+}

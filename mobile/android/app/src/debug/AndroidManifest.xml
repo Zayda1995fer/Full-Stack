@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The INTERNET permission is required for development (hot reload, debugging). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--
+      SOLO DESARROLLO: permite HTTP sin cifrar hacia la API local (10.0.2.2).
+      Este archivo solo aplica a builds de debug. NUNCA lo agregues al
+      manifest principal (src/main): en producción usa HTTPS.
+    -->
+    <application android:usesCleartextTraffic="true"/>
+</manifest>
